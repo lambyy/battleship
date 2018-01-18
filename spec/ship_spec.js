@@ -1,4 +1,4 @@
-describe('Ship', () => {
+describe('A Ship', () => {
   const horizontalShip = new Ship(2, 'h');
   const verticalShip = new Ship(2, 'v');
 
@@ -6,14 +6,14 @@ describe('Ship', () => {
     expect(horizontalShip).toEqual(jasmine.any(Ship));
   });
 
-  it('has a length and orientation', () => {
+  it('has length and orientation', () => {
     expect(horizontalShip.length).toBe(2);
     expect(horizontalShip.orientation).toBe('h');
     expect(verticalShip.length).toBe(2);
     expect(verticalShip.orientation).toBe('v');
   });
 
-  describe('can determine occupied positions', () => {
+  describe('can determine which positions it will occupy', () => {
     it('when the ship is oriented horizontally', () => {
       expect(horizontalShip.occupied(0, 0)).toEqual([[0, 0], [1, 0]]);
       expect(horizontalShip.occupied(3, 4)).toEqual([[3, 4], [4, 4]]);
@@ -24,7 +24,7 @@ describe('Ship', () => {
       expect(verticalShip.occupied(3, 4)).toEqual([[3, 4], [3, 5]]);
     });
 
-    it('for ships of any length', () => {
+    it('for different ship lengths', () => {
       const longShip = new Ship(5, 'h');
       let occupiedPos = longShip.occupied(0, 0);
       expect(occupiedPos.length).toEqual(longShip.length);
@@ -33,5 +33,18 @@ describe('Ship', () => {
       occupiedPos = longShip.occupied(3, 4);
       expect(occupiedPos).toEqual([[3, 4], [4, 4], [5, 4], [6, 4], [7, 4]]);
     });
+  });
+
+  it('can be hit', () => {
+    expect(horizontalShip.health).toEqual(2);
+    horizontalShip.hit();
+    expect(horizontalShip.health).toEqual(1);
+  });
+
+  it('can sink', () => {
+    expect(horizontalShip.health).toEqual(2);
+    horizontalShip.hit();
+    horizontalShip.hit();
+    expect(horizontalShip.sunk).toEqual(true);
   });
 });
