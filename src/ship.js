@@ -2,6 +2,7 @@ class Ship {
   constructor(length, orientation = 'h') {
     this.length = length;
     this.orientation = orientation;
+    this.health = length;
   }
 
   occupied(x, y) {
@@ -13,5 +14,13 @@ class Ship {
     }
 
     return occupiedPos;
+  }
+
+  hit() {
+    return this.health--;
+  }
+
+  sunk() {
+    return this.health <= 0;
   }
 }

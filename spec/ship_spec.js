@@ -35,16 +35,24 @@ describe('A Ship', () => {
     });
   });
 
-  it('can be hit', () => {
-    expect(horizontalShip.health).toEqual(2);
-    horizontalShip.hit();
-    expect(horizontalShip.health).toEqual(1);
-  });
+  describe('when attacked', () => {
+    const ship = new Ship(2, 'h');
 
-  it('can sink', () => {
-    expect(horizontalShip.health).toEqual(2);
-    horizontalShip.hit();
-    horizontalShip.hit();
-    expect(horizontalShip.sunk).toEqual(true);
+    beforeEach(() => {
+      ship.health = ship.length;
+    });
+
+    it('can be hit', () => {
+      expect(ship.health).toEqual(2);
+      ship.hit();
+      expect(ship.health).toEqual(1);
+    });
+
+    it('can sink when it has zero health', () => {
+      expect(ship.health).toEqual(2);
+      ship.hit();
+      ship.hit();
+      expect(ship.sunk()).toBe(true);
+    });
   });
 });
