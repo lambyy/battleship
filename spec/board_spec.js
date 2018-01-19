@@ -34,18 +34,20 @@ describe('A Board', () => {
     const overlappingShipPos = [[1, 0], [1, 1]];
 
     beforeEach(() => {
-      spyOn(board, 'placeShip').and.callThrough();
-
-      board.placeShip(shipPos1);
-      board.placeShip(shipPos2);
+      board.placeShip(shipPos1, 1);
+      board.placeShip(shipPos2, 2);
     });
 
+    afterEach(() => {
+      board.reset();
+    });
+//
     it('places ships at specified positions on the grid', () => {
-      expect(board[0, 0]).toBeDefined();
-      expect(board[1, 0]).toBeDefined();
-      expect(board[3, 4]).toBeDefined();
-      expect(board[3, 5]).toBeDefined();
-      expect(board[0, 2]).not.toBeDefined();
+      expect(board.get([0, 0])).toBeDefined();
+      expect(board.get([1, 0])).toBeDefined();
+      expect(board.get([3, 4])).toBeDefined();
+      expect(board.get([3, 5])).toBeDefined();
+      expect(board.get([0, 2])).not.toBeDefined();
     });
 
     it('tracks the number of active ships', () => {
@@ -53,14 +55,14 @@ describe('A Board', () => {
     });
 
     it('does not allow ships to overlap', () => {
-      board.placeShip(overlappingShipPos).toBe(false);
-      expect(board[1, 1]).not.toBeDefined();
+      expect(board.placeShip(overlappingShipPos, 3)).toBe(false);
+      expect(board.get([1, 1])).not.toBeDefined();
     });
   });
 
   describe('when in play', () => {
     it('checks if a position has been attacked', () => {
-
+      console.log(board.grid);
     });
 
     it('will update the grid if the attack missed', () => {
