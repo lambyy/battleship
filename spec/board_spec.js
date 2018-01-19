@@ -39,7 +39,8 @@ describe('A Board', () => {
     });
 
     afterEach(() => {
-      board.reset();
+      board.grid = board.grid.map(row => Array(row.length));
+      board.activeShips = 0;
     });
 //
     it('places ships at specified positions on the grid', () => {
@@ -61,20 +62,37 @@ describe('A Board', () => {
   });
 
   describe('when in play', () => {
-    it('checks if a position has been attacked', () => {
-      console.log(board.grid);
+    const ship = {
+      length: 2,
+      health: 2
+    };
+
+    afterEach(() => {
+      board.grid = board.grid.map(row => Array(row.length));
+      board.activeShips = 0;
+    });
+
+    it('checks if a position has been attacked before', () => {
+      expect(board.taken([0, 0])).toBe(false);
+      board.set([0, 0], 1);
+      expect(board.taken([0, 0])).toBe(true);
     });
 
     it('will update the grid if the attack missed', () => {
-
+      expect(board.attack([0, 0])).toBeUndefined();
+      expect(board.get([0, 0])).toEqual('X');
     });
 
-    it('will update the grid if a ship was hit', () => {
-
+    it('will update the grid if the attack hit', () => {
+      board.set([0, 0], ship);
+      expect(board.attack([0, 0])).toBe(ship);
+      expect(board.get([0, 0])).toEqual('O');
     });
 
-    it('will update the number of active ships if a ship was sunk', () => {
-
+    it('will update the number of active ships if a ship sinks', () => {
+      board.activeShips = 2;
+      board.sinkShip();
+      expect(board.activeShips).toEqual(1);
     });
   });
 

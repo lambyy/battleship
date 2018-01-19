@@ -6,7 +6,6 @@ class Board {
 
   placeShip(shipPos, ship) {
     const unoccupied = shipPos.every(pos => this.get(pos) === undefined);
-    console.log(unoccupied);
     if(unoccupied) {
       shipPos.forEach(pos => {
         this.set(pos, ship);
@@ -17,6 +16,10 @@ class Board {
     return false;
   }
 
+  guess() {
+
+  }
+
   get(pos) {
     const [x, y] = pos;
     return this.grid[x][y];
@@ -25,10 +28,5 @@ class Board {
   set(pos, val) {
     const [x, y] = pos;
     this.grid[x][y] = val;
-  }
-
-  reset() {
-    this.grid = this.grid.map(row => Array(row.length));
-    this.activeShips = 0;
   }
 }
