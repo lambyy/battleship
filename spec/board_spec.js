@@ -14,9 +14,9 @@ describe('A Board', () => {
     });
 
     it('with an empty NxN grid if given N', () => {
-      const grid = smallBoard.grid;
-      expect(grid.length).toEqual(3);
-      grid.forEach( row =>  {
+      const smallGrid = smallBoard.grid;
+      expect(smallGrid.length).toEqual(3);
+      smallGrid.forEach( row =>  {
         expect(row.length).toEqual(3);
         expect(row.every(pos => pos === undefined)).toBe(true);
       });
@@ -29,12 +29,32 @@ describe('A Board', () => {
   });
 
   describe('when setting up', () => {
-    it('places ships at specified positions on the grid', () => {
+    const shipPos1 = [[0, 0], [1, 0]];
+    const shipPos2 = [[3, 4], [3, 5]];
+    const overlappingShipPos = [[1, 0], [1, 1]];
 
+    beforeEach(() => {
+      spyOn(board, 'placeShip').and.callThrough();
+
+      board.placeShip(shipPos1);
+      board.placeShip(shipPos2);
+    });
+
+    it('places ships at specified positions on the grid', () => {
+      expect(board[0, 0]).toBeDefined();
+      expect(board[1, 0]).toBeDefined();
+      expect(board[3, 4]).toBeDefined();
+      expect(board[3, 5]).toBeDefined();
+      expect(board[0, 2]).not.toBeDefined();
     });
 
     it('tracks the number of active ships', () => {
+      expect(board.activeShips).toEqual(2);
+    });
 
+    it('does not allow ships to overlap', () => {
+      board.placeShip(overlappingShipPos).toBe(false);
+      expect(board[1, 1]).not.toBeDefined();
     });
   });
 
