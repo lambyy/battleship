@@ -1,3 +1,6 @@
+import Board from '../src/board.js';
+// const Board = require('../src/board.js');
+
 describe('A Board', () => {
   const board = new Board();
 
@@ -44,11 +47,11 @@ describe('A Board', () => {
     });
 //
     it('places ships at specified positions on the grid', () => {
-      expect(board.get([0, 0])).toBeDefined();
-      expect(board.get([1, 0])).toBeDefined();
-      expect(board.get([3, 4])).toBeDefined();
-      expect(board.get([3, 5])).toBeDefined();
-      expect(board.get([0, 2])).not.toBeDefined();
+      expect(board.grid[0][0]).toBeDefined();
+      expect(board.grid[1][0]).toBeDefined();
+      expect(board.grid[3][4]).toBeDefined();
+      expect(board.grid[3][5]).toBeDefined();
+      expect(board.grid[0][2]).not.toBeDefined();
     });
 
     it('tracks the number of active ships', () => {
@@ -57,7 +60,7 @@ describe('A Board', () => {
 
     it('does not allow ships to overlap', () => {
       expect(board.placeShip(overlappingShipPos, 3)).toBe(false);
-      expect(board.get([1, 1])).not.toBeDefined();
+      expect(board.grid[1][1]).not.toBeDefined();
     });
   });
 
@@ -74,25 +77,34 @@ describe('A Board', () => {
 
     it('checks if a position has been attacked before', () => {
       expect(board.taken([0, 0])).toBe(false);
-      board.set([0, 0], 1);
+      board.grid[0][0] = 'X';
+      board.grid[0][1] = 'O';
       expect(board.taken([0, 0])).toBe(true);
+      expect(board.taken([0, 1])).toBe(true);
     });
 
     it('will update the grid if the attack missed', () => {
       expect(board.attack([0, 0])).toBeUndefined();
-      expect(board.get([0, 0])).toEqual('X');
+      expect(board.grid[0][0]).toEqual('X');
     });
 
     it('will update the grid if the attack hit', () => {
-      board.set([0, 0], ship);
+      board.grid[0][0] = ship;
       expect(board.attack([0, 0])).toBe(ship);
-      expect(board.get([0, 0])).toEqual('O');
+      expect(board.grid[0][0]).toEqual('O');
     });
 
     it('will update the number of active ships if a ship sinks', () => {
       board.activeShips = 2;
       board.sinkShip();
       expect(board.activeShips).toEqual(1);
+    });
+
+    it('will win if there are no active ships remaining', () => {
+      board.activeShips = 1;
+      expect(board.win()).toBe(false);
+      board.activeShips = 0;
+      expect(board.win()).toBe(true);
     });
   });
 

@@ -1,3 +1,5 @@
+import Ship from '../src/ship.js';
+
 describe('A Ship', () => {
   const horizontalShip = new Ship(2, 'h');
   const verticalShip = new Ship(2, 'v');
