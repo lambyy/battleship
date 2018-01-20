@@ -4,7 +4,8 @@
   "description": "\"Battleship\"",
   "main": "index.js",
   "scripts": {
-    "test": "babel-node node_modules/.bin/jasmine"
+    "test": "babel-node node_modules/.bin/jasmine",
+    "start": "babel-node --presets es2015 src/index.js"
   },
   "repository": {
     "type": "git",
