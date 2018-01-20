@@ -1,7 +1,7 @@
 export default class Ship {
   constructor(length, orientation = 'h') {
     this.length = length;
-    this.orientation = orientation;
+    this.orientation = orientation.toLowerCase();
     this.health = length;
   }
 
@@ -9,7 +9,7 @@ export default class Ship {
     const occupiedPos = [];
 
     for (let i = 0; occupiedPos.length < this.length; i++) {
-      let [xPos, yPos] = this.orientation === 'h' ? [x + i, y] : [x, y + i];
+      let [xPos, yPos] = this.orientation === 'h' ? [x, y + i] : [x + i, y];
       occupiedPos.push([xPos, yPos]);
     }
 

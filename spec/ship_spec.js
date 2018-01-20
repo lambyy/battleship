@@ -4,10 +4,6 @@ describe('A Ship', () => {
   const horizontalShip = new Ship(2, 'h');
   const verticalShip = new Ship(2, 'v');
 
-  it('is an instance of the Ship class', () => {
-    expect(horizontalShip).toEqual(jasmine.any(Ship));
-  });
-
   it('has length and orientation', () => {
     expect(horizontalShip.length).toBe(2);
     expect(horizontalShip.orientation).toBe('h');
@@ -51,9 +47,7 @@ describe('A Ship', () => {
     });
 
     it('can sink when it has zero health', () => {
-      expect(ship.health).toEqual(2);
-      ship.hit();
-      ship.hit();
+      ship.health = 0;
       expect(ship.sunk()).toBe(true);
     });
   });

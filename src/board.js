@@ -4,10 +4,13 @@ export default class Board {
     this.activeShips = 0;
   }
 
-  placeShip(shipPos, ship) {
-    const unoccupied = shipPos.every(pos => this.get(pos) === undefined);
+  placeShip(positions, ship) {
+    const unoccupied = positions.every(pos => {
+      if(!this.withinGrid(pos)) return false;
+      return this.get(pos) === undefined;
+    });
     if(unoccupied) {
-      shipPos.forEach(pos => {
+      positions.forEach(pos => {
         this.set(pos, ship);
       });
       this.activeShips++;
@@ -46,22 +49,31 @@ export default class Board {
     this.grid[x][y] = val;
   }
 
+  withinGrid(pos) {
+    const rows = this.grid.length;
+    const cols = this.grid[0].length;
+
+    return (pos[0] >= 0 && pos[0] < rows && pos[1] >= 0 && pos[1] < cols);
+  }
+
   display(play = true) {
-    const header = `  ${[...Array(10).keys()].join(' ')}`;
+    const header = `  | ${[...Array(10).keys()].join(' | ')}`;
     console.log(header);
     this.grid.forEach( (row, idx) => Board.display_row(row, idx, play));
+    console.log('\n');
   }
 
   static display_row(row, idx, play = true) {
     const output = [...row].map(el => {
-      if(!el) return 'w';
+      if(!el) return ' ';
       if(play) {
         console.log(`play true`);
-        return (['X', 'O'].includes(el)) ? el : 'w';
+        return (['X', 'O'].includes(el)) ? el : ' ';
       } else {
         return 'S';
       }
     });
-    console.log(`${idx} ${output.join(' ')}`);
+    console.log(`${"-".repeat(42)}`);
+    console.log(`${idx} | ${output.join(' | ')}`);
   }
 }
