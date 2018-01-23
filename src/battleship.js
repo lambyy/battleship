@@ -17,15 +17,14 @@ export default class Battleship {
   }
 
   play() {
-
     console.log("Player 1 turn. ");
     this.setup(this.board1, [...this.pieces])
       .then(() => {
         console.log(("Player 2 turn. "));
         return this.setup(this.board2, [...this.pieces]);
       })
-      .then(() => this.playTurn());
-
+      .then(() => this.playTurn())
+      .then(() => rl.close());
   }
 
   playTurn() {
@@ -39,27 +38,27 @@ export default class Battleship {
         .then((target) => {
           if(board.taken(target)) {
             console.log("This position is already taken, try again.");
-            return resolve("Taken");
+            return resolve(this.playTurn());
           }
 
           const ship = board.attack(target);
           if(!ship) {
             console.log("MISS!")
-            return resolve("Miss");
-          }
-
-          ship.hit();
-          console.log("HIT!");
-          if(ship.sunk()) {
-            board.sinkShip();
-            console.log("Ship has been SUNK!");
+          } else {
+            ship.hit();
+            console.log("HIT!");
+            if(ship.sunk()) {
+              board.sinkShip();
+              console.log("A ship has been SUNK!");
+            }
           }
 
           if(board.win()) {
             console.log(`All ships sunk.\nPlayer ${player} WINS!`);
             return resolve("Game over.");
           } else {
-            this.currentBoard = (player === 1) ? this.board2 : this.board1;
+            console.log(`${board.activeShips} ships remaining.`);
+            this.currentBoard = (player === 1) ? this.board1 : this.board2;
             return resolve(this.playTurn());
           }
         });
@@ -67,11 +66,12 @@ export default class Battleship {
     });
   }
 
+  // recursively setup up one board with provided ship pieces
   setup(board, ships) {
     return new Promise((resolve) => {
       let target;
       console.log(`\nPlace your ship of length ${ships[0]}`);
-      board.display(false);
+      board.display("setup");
       this.recGetPos(board)
       .then((pos) => {
         target = pos;
@@ -87,8 +87,7 @@ export default class Battleship {
         if(ships.length > 0) {
           return resolve(this.setup(board, ships));
         } else {
-          // rl.close();
-          board.display(false);
+          board.display("setup");
           return resolve(board);
         }
       });
@@ -96,13 +95,14 @@ export default class Battleship {
     });
   }
 
+  // create new Ship & place on board at target position; return true if successful
   placeShip(length, dir, pos, board) {
     const ship = new Ship(length, dir);
     const shipPositions = ship.occupied(pos[0], pos[1]);
-    const success = board.placeShip(shipPositions, ship);
-    return success;
+    return board.placeShip(shipPositions, ship);
   }
 
+  // recursively get target input from player until a valid input is given
   recGetPos(board) {
     return new Promise((resolve) => {
       this.getPos(board).then((pos) => {
@@ -111,6 +111,7 @@ export default class Battleship {
     });
   }
 
+  // get target input from player
   getPos(board) {
     return new Promise((resolve) => {
       rl.question("Please enter a target square (i.e., '3,4') ", (pos) => {
@@ -120,6 +121,7 @@ export default class Battleship {
     });
   }
 
+  // validate target input
   validPos(pos, board) {
     if(board.withinGrid(pos)) {
       return pos;
@@ -128,6 +130,7 @@ export default class Battleship {
     return this.recGetPos(board);
   }
 
+  // recursively get direction input from player until a valid input is given
   recGetDir() {
     return new Promise((resolve) => {
       this.getDir().then((dir) => {
@@ -136,12 +139,14 @@ export default class Battleship {
     });
   }
 
+  // get direction input from player
   getDir() {
     return new Promise((resolve) => {
       rl.question("Which direction (h, v) should the ship face? ", (dir) => resolve(dir));
     });
   }
 
+  // validate direction input from player
   validDir(dir) {
     if(dir.toLowerCase() === "h" || dir.toLowerCase() === "v") {
       return dir;
