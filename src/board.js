@@ -67,7 +67,6 @@ export default class Board {
     const output = [...row].map(el => {
       if(!el) return ' ';
       if(play) {
-        console.log(`play true`);
         return (['X', 'O'].includes(el)) ? el : ' ';
       } else {
         return 'S';

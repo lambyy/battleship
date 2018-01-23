@@ -13,25 +13,65 @@ export default class Battleship {
 
     this.board1 = new Board();
     this.board2 = new Board();
+    this.currentBoard = this.board2;
   }
 
   play() {
-    // const setupBoard = (board, ships) => new Promise((resolve) => {
-    //   this.setup(board, ships);
-    // });
 
-    this.setup(this.board1, [...this.pieces], () => {
-      this.setup(this.board2, [...this.pieces], () => {
-        rl.close();
-        console.log("done");
-      });
+    console.log("Player 1 turn. ");
+    this.setup(this.board1, [...this.pieces])
+      .then(() => {
+        console.log(("Player 2 turn. "));
+        return this.setup(this.board2, [...this.pieces]);
+      })
+      .then(() => this.playTurn());
+
+  }
+
+  playTurn() {
+    return new Promise((resolve) => {
+      const board = this.currentBoard;
+      const player = (board === this.board2) ? 1 : 2;
+
+      console.log(`Player ${player} turn to attack.\n`);
+      board.display();
+      this.recGetPos(board)
+        .then((target) => {
+          if(board.taken(target)) {
+            console.log("This position is already taken, try again.");
+            return resolve("Taken");
+          }
+
+          const ship = board.attack(target);
+          if(!ship) {
+            console.log("MISS!")
+            return resolve("Miss");
+          }
+
+          ship.hit();
+          console.log("HIT!");
+          if(ship.sunk()) {
+            board.sinkShip();
+            console.log("Ship has been SUNK!");
+          }
+
+          if(board.win()) {
+            console.log(`All ships sunk.\nPlayer ${player} WINS!`);
+            return resolve("Game over.");
+          } else {
+            this.currentBoard = (player === 1) ? this.board2 : this.board1;
+            return resolve(this.playTurn());
+          }
+        });
+
     });
-
   }
 
   setup(board, ships) {
     return new Promise((resolve) => {
       let target;
+      console.log(`\nPlace your ship of length ${ships[0]}`);
+      board.display(false);
       this.recGetPos(board)
       .then((pos) => {
         target = pos;
@@ -47,7 +87,7 @@ export default class Battleship {
         if(ships.length > 0) {
           return resolve(this.setup(board, ships));
         } else {
-          rl.close();
+          // rl.close();
           board.display(false);
           return resolve(board);
         }
@@ -73,7 +113,6 @@ export default class Battleship {
 
   getPos(board) {
     return new Promise((resolve) => {
-      board.display(false);
       rl.question("Please enter a target square (i.e., '3,4') ", (pos) => {
         let target = pos.split(',').map(el => parseInt(el));
         resolve(target);
@@ -99,7 +138,7 @@ export default class Battleship {
 
   getDir() {
     return new Promise((resolve) => {
-      rl.question("Which direction ", (dir) => resolve(dir));
+      rl.question("Which direction (h, v) should the ship face? ", (dir) => resolve(dir));
     });
   }
 
