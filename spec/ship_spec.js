@@ -13,23 +13,23 @@ describe('A Ship', () => {
 
   describe('can determine which positions it will occupy', () => {
     it('when the ship is oriented horizontally', () => {
-      expect(horizontalShip.occupied(0, 0)).toEqual([[0, 0], [1, 0]]);
-      expect(horizontalShip.occupied(3, 4)).toEqual([[3, 4], [4, 4]]);
+      expect(horizontalShip.covers(0, 0)).toEqual([[0, 0], [0, 1]]);
+      expect(horizontalShip.covers(3, 4)).toEqual([[3, 4], [3, 5]]);
     });
 
     it('when the ship is oriented vertically', () => {
-      expect(verticalShip.occupied(0, 0)).toEqual([[0, 0], [0, 1]]);
-      expect(verticalShip.occupied(3, 4)).toEqual([[3, 4], [3, 5]]);
+      expect(verticalShip.covers(0, 0)).toEqual([[0, 0], [1, 0]]);
+      expect(verticalShip.covers(3, 4)).toEqual([[3, 4], [4, 4]]);
     });
 
     it('for different ship lengths', () => {
       const longShip = new Ship(5, 'h');
-      let occupiedPos = longShip.occupied(0, 0);
-      expect(occupiedPos.length).toEqual(longShip.length);
-      expect(occupiedPos).toEqual([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]);
+      let coversPos = longShip.covers(0, 0);
+      expect(coversPos.length).toEqual(longShip.length);
+      expect(coversPos).toEqual([[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]]);
 
-      occupiedPos = longShip.occupied(3, 4);
-      expect(occupiedPos).toEqual([[3, 4], [4, 4], [5, 4], [6, 4], [7, 4]]);
+      coversPos = longShip.covers(3, 4);
+      expect(coversPos).toEqual([[3, 4], [3, 5], [3, 6], [3, 7], [3, 8]]);
     });
   });
 

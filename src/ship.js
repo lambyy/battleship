@@ -5,15 +5,15 @@ export default class Ship {
     this.health = length;
   }
 
-  occupied(x, y) {
-    const occupiedPos = [];
+  covers(x, y) {
+    const coveredPos = [];
 
-    for (let i = 0; occupiedPos.length < this.length; i++) {
+    for (let i = 0; coveredPos.length < this.length; i++) {
       let [xPos, yPos] = this.orientation === 'h' ? [x, y + i] : [x + i, y];
-      occupiedPos.push([xPos, yPos]);
+      coveredPos.push([xPos, yPos]);
     }
 
-    return occupiedPos;
+    return coveredPos;
   }
 
   hit() {
