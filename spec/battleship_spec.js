@@ -41,18 +41,4 @@ describe("A Battleship game", () => {
       expect(game.attack([0, 2])).toEqual("Already Taken");
     });
   });
-
-  describe('win', () => {
-    it('determines the winner when all ships on a board are sunk', () => {
-      const board = new Board();
-      board.activeShips = 1;
-      game.currentBoard = board;
-
-      expect(game.checkWinner()).toBe(false);
-
-      board.activeShips = 0;
-      expect(game.checkWinner()).toBe(true);
-    });
-
-  });
 });

@@ -49,7 +49,7 @@ export default class Battleship {
           const result = this.attack(target);
           this.logResult(result);
 
-          if(this.checkWinner()) {
+          if(this.currentBoard.win()) {
             console.log(`All ships have been sunk.\nPlayer ${this.currentPlayer} WINS!`);
             return resolve("Game over.");
           }
@@ -95,13 +95,6 @@ export default class Battleship {
         console.log(`${this.currentBoard.activeShips} ship(s) remaining.\n`);
         break;
     }
-  }
-
-  // return true if all ships on currentBoard have been sunk,
-  // otherwise swtich currentBoard
-  checkWinner() {
-    if(this.currentBoard.win()) return true;
-    return false;
   }
 
   // recursively setup up one board with provided ship pieces
