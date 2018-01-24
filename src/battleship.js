@@ -63,9 +63,7 @@ export default class Battleship {
   // attack target on currentBoard and return the result
   attack(pos) {
     const board = this.currentBoard;
-    if(board.taken(pos)) {
-      return "Already Taken";
-    }
+    if(board.taken(pos)) return "Already Taken";
 
     const ship = board.attack(pos);
     if(!ship) {
@@ -113,7 +111,7 @@ export default class Battleship {
       let target;
       console.log(`Place your ship of length ${ships[0]}\n`);
       board.display("setup");
-      this.recGetPos(board)
+      this.recGetPos()
       .then((pos) => {
         target = pos;
         return this.recGetDir();
@@ -129,7 +127,6 @@ export default class Battleship {
         if(ships.length > 0) {
           return resolve(this.setup(ships));
         } else {
-          // board.display("setup");
           return resolve(board);
         }
       });
@@ -154,16 +151,16 @@ export default class Battleship {
   }
 
   // recursively get target input from player until a valid input is given
-  recGetPos(board) {
+  recGetPos() {
     return new Promise((resolve) => {
-      this.getPos(board).then((pos) => {
-        resolve(this.validPos(pos, board));
+      this.getPos().then((pos) => {
+        resolve(this.validPos(pos));
       });
     });
   }
 
   // get target input from player
-  getPos(board) {
+  getPos() {
     return new Promise((resolve) => {
       rl.question("Please enter a target square (ex: 3,4 for row 3, col 4) ", (pos) => {
         let target = pos.split(',').map(el => parseInt(el));
@@ -173,12 +170,12 @@ export default class Battleship {
   }
 
   // validate target input
-  validPos(pos, board) {
-    if(board.withinGrid(pos)) {
+  validPos(pos) {
+    if(this.currentBoard.withinGrid(pos)) {
       return pos;
     }
     console.log("Invalid target, try again.");
-    return this.recGetPos(board);
+    return this.recGetPos();
   }
 
   // recursively get direction input from player until a valid input is given
