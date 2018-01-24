@@ -1,5 +1,7 @@
 require('babel-register');
 import Battleship from './battleship.js';
 
-let game = new Battleship(5, [2, 2]);
+const boardSize = 5;
+const shipPieces = [2, 2];
+let game = new Battleship(boardSize, shipPieces);
 game.play();
