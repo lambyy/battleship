@@ -1,6 +1,6 @@
 # Battleship
 
-This is a two-player Battleship game played in the terminal.
+Battleship is a two-player game played in the terminal. Players first take turns setting up their own board with ships of various sizes. After both boards are setup, players take turns to attack squares on their opponents boards. The first player to sink all the ships on the opposing board wins.
 
 ## Installation
 
@@ -27,4 +27,4 @@ Begin a new game of Battleship on 5x5 boards and two ships of length 2.
 
 `npm start`
 
-Initialize Battleship games with different size boards and ships by changing their values in `index.js`.
+Initialize Battleship games with different sized boards and ship pieces by changing their values in `index.js`.
