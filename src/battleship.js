@@ -6,43 +6,50 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
+const clear = require('clear');
 
 export default class Battleship {
-  constructor() {
-    this.pieces = [4, 3];
+  constructor(size = 10, pieces = [3, 2, 2]) {
+    this.pieces = pieces;
 
-    this.board1 = new Board();
-    this.board2 = new Board();
+    this.board1 = new Board(size);
+    this.board2 = new Board(size);
     this.currentPlayer = 1;
     this.currentBoard = this.board2;
   }
 
   play() {
-    console.log("Player 1 turn. ");
+    clear();
+    console.log("BEGIN BATTLESHIP!");
+    console.log("PLAYER 1 TURN. Setup your board.");
     this.setup([...this.pieces])
       .then(() => {
         this.switchTurns();
-        console.log(("Player 2 turn. "));
+        console.log(("PLAYER 2 TURN. Setup your board."));
         return this.setup([...this.pieces]);
       })
-      .then(() => this.playTurn())
+      .then(() => {
+        this.switchTurns();
+        console.log("The boards have been setup!");
+        return this.playTurn();
+      })
       .then(() => rl.close());
   }
 
   // recursively attack target position until a winner is determined
     playTurn() {
     return new Promise((resolve) => {
-      // const board = this.currentBoard;
-      // const player = (board === this.board2) ? 1 : 2;
+      const board = this.currentBoard;
 
-      console.log(`Player ${this.currentPlayer} turn to attack.\n`);
-      this.currentBoard.display();
-      this.recGetPos(this.currentBoard)
+      console.log(`PLAYER ${this.currentPlayer} TURN TO ATTACK.`);
+      console.log(`${board.activeShips} ships remaining.\n`);
+      board.display();
+      this.recGetPos(board)
         .then((target) => {
-          this.attack(target);
-          if(this.checkWinner()) {
-            return resolve("Game over.");
-          }
+          clear();
+          const result = this.attack(target);
+          if(this.checkWinner()) return resolve("Game over.");
+          if (result !== "ALREADY TAKEN") this.switchTurns();
           return resolve(this.playTurn());
         });
 
@@ -53,20 +60,21 @@ export default class Battleship {
   attack(pos) {
     const board = this.currentBoard;
     if(board.taken(pos)) {
-      console.log("This position is already taken, try again.");
+      console.log("This position is already taken, try again.\n");
       return "ALREADY TAKEN";
     }
 
     const ship = board.attack(pos);
     if(!ship) {
-      console.log("MISS!");
+      console.log("MISS!\n");
       return "MISS!";
     } else {
       ship.hit();
-      console.log("HIT!");
+      console.log("HIT!\n");
       if(ship.sunk()) {
         board.sinkShip();
         console.log("A ship has been SUNK!");
+        console.log(`${board.activeShips} ships remaining.\n`);
         return "SUNK!";
       }
       return "HIT!";
@@ -77,13 +85,9 @@ export default class Battleship {
   // otherwise swtich currentBoard
   checkWinner() {
     const board = this.currentBoard;
-    const player = (board === this.board2) ? 1 : 2;
     if(board.win()) {
-      console.log(`All ships sunk.\nPlayer ${player} WINS!`);
+      console.log(`All ships have been sunk.\nPlayer ${this.currentPlayer} WINS!`);
       return true;
-    } else {
-      console.log(`${board.activeShips} ships remaining.`);
-      this.switchTurns();
     }
     return false;
   }
@@ -93,7 +97,7 @@ export default class Battleship {
     return new Promise((resolve) => {
       const board = this.currentBoard;
       let target;
-      console.log(`\nPlace your ship of length ${ships[0]}`);
+      console.log(`Place your ship of length ${ships[0]}\n`);
       board.display("setup");
       this.recGetPos(board)
       .then((pos) => {
@@ -101,16 +105,17 @@ export default class Battleship {
         return this.recGetDir();
       })
       .then((dir) => {
+        clear();
         const success = this.placeShip(ships[0], dir, target, board);
         if(success) {
           ships.shift();
         } else {
-          console.log(`\n\nCould not place ship at ${target}, try again.\n`);
+          console.log(`Could not place ${(dir === "h") ? 'horizontal' : 'vertical' } ship at ${target}, try again.\n`);
         }
         if(ships.length > 0) {
           return resolve(this.setup(ships));
         } else {
-          board.display("setup");
+          // board.display("setup");
           return resolve(board);
         }
       });
@@ -180,7 +185,8 @@ export default class Battleship {
 
   // validate direction input from player
   validDir(dir) {
-    if(dir.toLowerCase() === "h" || dir.toLowerCase() === "v") {
+    dir = dir.toLowerCase();
+    if(dir === "h" || dir === "v") {
       return dir;
     }
     console.log("Invalid direction, try again.");

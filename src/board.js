@@ -57,7 +57,8 @@ export default class Board {
   }
 
   display(type) {
-    const header = `  | ${[...Array(10).keys()].join(' | ')}`;
+    const size = this.grid.length;
+    const header = `  | ${[...Array(size).keys()].join(' | ')}`;
     console.log(header);
     this.grid.forEach( (row, idx) => Board.display_row(row, idx, type));
     console.log('\n');
@@ -72,7 +73,7 @@ export default class Board {
         return 'S';
       }
     });
-    console.log(`${"-".repeat(42)}`);
+    console.log(`${"-".repeat((row.length * 4) + 2)}`);
     console.log(`${idx} | ${output.join(' | ')}`);
   }
 }
