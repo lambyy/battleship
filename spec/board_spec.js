@@ -1,5 +1,4 @@
 import Board from '../src/board.js';
-// const Board = require('../src/board.js');
 
 describe('A Board', () => {
   const board = new Board();

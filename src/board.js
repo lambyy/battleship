@@ -60,11 +60,11 @@ export default class Board {
     const size = this.grid.length;
     const header = `  | ${[...Array(size).keys()].join(' | ')}`;
     console.log(header);
-    this.grid.forEach( (row, idx) => Board.display_row(row, idx, type));
+    this.grid.forEach( (row, idx) => Board.displayRow(row, idx, type));
     console.log('\n');
   }
 
-  static display_row(row, idx, type = "play") {
+  static displayRow(row, idx, type = "play") {
     const output = [...row].map(el => {
       if(!el) return ' ';
       if(type === "play") {

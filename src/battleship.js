@@ -41,7 +41,7 @@ export default class Battleship {
       const board = this.currentBoard;
 
       console.log(`PLAYER ${this.currentPlayer} TURN TO ATTACK.`);
-      console.log(`${board.activeShips} ships remaining.\n`);
+      console.log(`${board.activeShips} ship(s) remaining.\n`);
       board.display();
       this.recGetPos(board)
         .then((target) => {
