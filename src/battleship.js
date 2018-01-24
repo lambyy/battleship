@@ -47,8 +47,13 @@ export default class Battleship {
         .then((target) => {
           clear();
           const result = this.attack(target);
-          if(this.checkWinner()) return resolve("Game over.");
-          if (result !== "ALREADY TAKEN") this.switchTurns();
+          this.logResult(result);
+
+          if(this.checkWinner()) {
+            console.log(`All ships have been sunk.\nPlayer ${this.currentPlayer} WINS!`);
+            return resolve("Game over.");
+          }
+          if (result !== "Already Taken") this.switchTurns();
           return resolve(this.playTurn());
         });
 
@@ -59,35 +64,45 @@ export default class Battleship {
   attack(pos) {
     const board = this.currentBoard;
     if(board.taken(pos)) {
-      console.log("This position is already taken, try again.\n");
-      return "ALREADY TAKEN";
+      return "Already Taken";
     }
 
     const ship = board.attack(pos);
     if(!ship) {
-      console.log("MISS!\n");
-      return "MISS!";
+      return "Miss";
     } else {
       ship.hit();
-      console.log("HIT!\n");
       if(ship.sunk()) {
         board.sinkShip();
-        console.log("A ship has been SUNK!");
-        console.log(`${board.activeShips} ships remaining.\n`);
-        return "SUNK!";
+        return "Sunk";
       }
-      return "HIT!";
+      return "Hit";
+    }
+  }
+
+  logResult(result) {
+    switch(result) {
+      case "Already Taken":
+        console.log("This position is already taken, try again.\n");
+        break;
+      case "Miss":
+        console.log("MISS!\n");
+        break;
+      case "Hit":
+        console.log("HIT!\n");
+        break;
+      case "Sunk":
+        console.log("HIT!\n");
+        console.log("A ship has been SUNK!");
+        console.log(`${this.currentBoard.activeShips} ship(s) remaining.\n`);
+        break;
     }
   }
 
   // return true if all ships on currentBoard have been sunk,
   // otherwise swtich currentBoard
   checkWinner() {
-    const board = this.currentBoard;
-    if(board.win()) {
-      console.log(`All ships have been sunk.\nPlayer ${this.currentPlayer} WINS!`);
-      return true;
-    }
+    if(this.currentBoard.win()) return true;
     return false;
   }
 
@@ -150,7 +165,7 @@ export default class Battleship {
   // get target input from player
   getPos(board) {
     return new Promise((resolve) => {
-      rl.question("Please enter a target square (i.e., '3,4') ", (pos) => {
+      rl.question("Please enter a target square (ex: 3,4 for row 3, col 4) ", (pos) => {
         let target = pos.split(',').map(el => parseInt(el));
         resolve(target);
       });
