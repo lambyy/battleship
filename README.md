@@ -6,7 +6,7 @@ Battleship is a two-player game played in the terminal. Players first take turns
 
 ```
 // clone repository
-git pull https://github.com/lambyy/battleship.git
+git clone https://github.com/lambyy/battleship.git
 
 // install dependencies
 npm install
