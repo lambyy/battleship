@@ -1,6 +1,5 @@
 import Ship from './ship.js';
 import Board from './board.js';
-import Player from './player.js';
 const readline = require('readline');
 const rl = readline.createInterface({
   input: process.stdin,
