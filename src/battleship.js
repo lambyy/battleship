@@ -91,14 +91,13 @@ export default class Battleship {
           return resolve(board);
         }
       });
-
     });
   }
 
   // create new Ship & place on board at target position; return true if successful
   placeShip(length, dir, pos, board) {
     const ship = new Ship(length, dir);
-    const shipPositions = ship.occupied(pos[0], pos[1]);
+    const shipPositions = ship.covers(pos[0], pos[1]);
     return board.placeShip(shipPositions, ship);
   }
 
