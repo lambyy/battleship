@@ -22,22 +22,23 @@ describe("A Battleship game", () => {
     const board = new Board();
     const ship = new Ship(2, 'h');
     board.placeShip([[0, 0], [0, 1]], ship);
+    game.currentBoard = board;
 
     it('returns if it missed', () => {
-      expect(game.attack(board, [0, 2])).toEqual("MISS!");
+      expect(game.attack([0, 2])).toEqual("MISS!");
     });
 
     it('returns if it hit a ship', () => {
-      expect(game.attack(board, [0, 0])).toEqual("HIT!");
+      expect(game.attack([0, 0])).toEqual("HIT!");
     });
 
     it('will sink a ship if it loses all health', () => {
-      expect(game.attack(board, [0, 1])).toEqual("SUNK!");
+      expect(game.attack([0, 1])).toEqual("SUNK!");
     });
 
     it('returns if the position has already been taken', () => {
-      expect(game.attack(board, [0, 0])).toEqual("ALREADY TAKEN");
-      expect(game.attack(board, [0, 2])).toEqual("ALREADY TAKEN");
+      expect(game.attack([0, 0])).toEqual("ALREADY TAKEN");
+      expect(game.attack([0, 2])).toEqual("ALREADY TAKEN");
     });
   });
 
@@ -47,10 +48,10 @@ describe("A Battleship game", () => {
       board.activeShips = 1;
       game.currentBoard = board;
 
-      expect(game.win()).toBe(false);
+      expect(game.checkWinner()).toBe(false);
 
       board.activeShips = 0;
-      expect(game.win()).toBe(true);
+      expect(game.checkWinner()).toBe(true);
     });
 
   });

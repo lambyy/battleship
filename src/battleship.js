@@ -13,62 +13,85 @@ export default class Battleship {
 
     this.board1 = new Board();
     this.board2 = new Board();
+    this.currentPlayer = 1;
     this.currentBoard = this.board2;
   }
 
   play() {
     console.log("Player 1 turn. ");
-    this.setup(this.board1, [...this.pieces])
+    this.setup([...this.pieces])
       .then(() => {
+        this.switchTurns();
         console.log(("Player 2 turn. "));
-        return this.setup(this.board2, [...this.pieces]);
+        return this.setup([...this.pieces]);
       })
       .then(() => this.playTurn())
       .then(() => rl.close());
   }
 
-  playTurn() {
+  // recursively attack target position until a winner is determined
+    playTurn() {
     return new Promise((resolve) => {
-      const board = this.currentBoard;
-      const player = (board === this.board2) ? 1 : 2;
+      // const board = this.currentBoard;
+      // const player = (board === this.board2) ? 1 : 2;
 
-      console.log(`Player ${player} turn to attack.\n`);
-      board.display();
-      this.recGetPos(board)
+      console.log(`Player ${this.currentPlayer} turn to attack.\n`);
+      this.currentBoard.display();
+      this.recGetPos(this.currentBoard)
         .then((target) => {
-          if(board.taken(target)) {
-            console.log("This position is already taken, try again.");
-            return resolve(this.playTurn());
-          }
-
-          const ship = board.attack(target);
-          if(!ship) {
-            console.log("MISS!")
-          } else {
-            ship.hit();
-            console.log("HIT!");
-            if(ship.sunk()) {
-              board.sinkShip();
-              console.log("A ship has been SUNK!");
-            }
-          }
-
-          if(board.win()) {
-            console.log(`All ships sunk.\nPlayer ${player} WINS!`);
+          this.attack(target);
+          if(this.checkWinner()) {
             return resolve("Game over.");
-          } else {
-            console.log(`${board.activeShips} ships remaining.`);
-            this.currentBoard = (player === 1) ? this.board1 : this.board2;
-            return resolve(this.playTurn());
           }
+          return resolve(this.playTurn());
         });
 
     });
   }
 
+  // attack target on currentBoard and return the result
+  attack(pos) {
+    const board = this.currentBoard;
+    if(board.taken(pos)) {
+      console.log("This position is already taken, try again.");
+      return "ALREADY TAKEN";
+    }
+
+    const ship = board.attack(pos);
+    if(!ship) {
+      console.log("MISS!");
+      return "MISS!";
+    } else {
+      ship.hit();
+      console.log("HIT!");
+      if(ship.sunk()) {
+        board.sinkShip();
+        console.log("A ship has been SUNK!");
+        return "SUNK!";
+      }
+      return "HIT!";
+    }
+  }
+
+  // return true if all ships on currentBoard have been sunk,
+  // otherwise swtich currentBoard
+  checkWinner() {
+    const board = this.currentBoard;
+    const player = (board === this.board2) ? 1 : 2;
+    if(board.win()) {
+      console.log(`All ships sunk.\nPlayer ${player} WINS!`);
+      return true;
+    } else {
+      console.log(`${board.activeShips} ships remaining.`);
+      this.switchTurns();
+    }
+    return false;
+  }
+
   // recursively setup up one board with provided ship pieces
-  setup(board, ships) {
+  setup(ships) {
     return new Promise((resolve) => {
+      const board = this.currentBoard;
       let target;
       console.log(`\nPlace your ship of length ${ships[0]}`);
       board.display("setup");
@@ -85,7 +108,7 @@ export default class Battleship {
           console.log(`\n\nCould not place ship at ${target}, try again.\n`);
         }
         if(ships.length > 0) {
-          return resolve(this.setup(board, ships));
+          return resolve(this.setup(ships));
         } else {
           board.display("setup");
           return resolve(board);
@@ -99,6 +122,16 @@ export default class Battleship {
     const ship = new Ship(length, dir);
     const shipPositions = ship.covers(pos[0], pos[1]);
     return board.placeShip(shipPositions, ship);
+  }
+
+  switchTurns() {
+    if(this.currentPlayer === 1) {
+      this.currentBoard = this.board1;
+      this.currentPlayer = 2;
+    } else {
+      this.currentBoard = this.board2;
+      this.currentPlayer = 1;
+    }
   }
 
   // recursively get target input from player until a valid input is given
